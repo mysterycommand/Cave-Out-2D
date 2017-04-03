@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MysteryCommand.Procedural
+namespace MysteryCommand.Procedural.Map
 {
 	public class Room : IComparable<Room>
 	{

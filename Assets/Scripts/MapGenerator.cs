@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using MysteryCommand.Procedural;
+using MysteryCommand.Procedural.Map;
 
 public class MapGenerator : MonoBehaviour {
 

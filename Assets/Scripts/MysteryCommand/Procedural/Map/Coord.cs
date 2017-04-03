@@ -1,4 +1,4 @@
-﻿namespace MysteryCommand.Procedural
+﻿namespace MysteryCommand.Procedural.Map
 {
 	public struct Coord
 	{
