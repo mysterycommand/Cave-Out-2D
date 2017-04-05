@@ -171,17 +171,19 @@ public class MapGenerator : MonoBehaviour {
     }
 
     void DrawCircle(Coord c, int r) {
-        for (int x = -r; x <= r; x++) {
-            for (int y = -r; y <= r; y++) {
-                if (x*x + y*y <= r*r) {
-                    int drawX = c.tileX + x;
-                    int drawY = c.tileY + y;
-                    if (IsInMapRange(drawX, drawY)) {
-                        map[drawX,drawY] = 0;
-                    }
-                }
+        int f = -r,
+            t = r + 1;
+
+        EachCell(f, t, f, t, (int col, int row) => {
+            if (col * col + row * row > r * r)  return;
+
+            int drawX = c.tileX + col;
+            int drawY = c.tileY + row;
+
+            if (IsInMapRange(drawX, drawY)) {
+                map[drawX,drawY] = 0;
             }
-        }
+        });
     }
 
     List<Coord> GetLine(Coord from, Coord to) {
