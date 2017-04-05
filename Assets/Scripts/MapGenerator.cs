@@ -296,18 +296,13 @@ public class MapGenerator : MonoBehaviour {
             seed = Time.time.ToString();
         }
 
-        System.Random pseudoRandom = new System.Random(seed.GetHashCode());
+        System.Random rando = new System.Random(seed.GetHashCode());
 
-        for (int x = 0; x < width; x ++) {
-            for (int y = 0; y < height; y ++) {
-                if (x == 0 || x == width-1 || y == 0 || y == height -1) {
-                    map[x,y] = 1;
-                }
-                else {
-                    map[x,y] = (pseudoRandom.Next(0,100) < randomFillPercent)? 1: 0;
-                }
-            }
-        }
+        EachCell(0, width, 0, height, (int col, int row) => {
+            bool isWall = rando.Next(0, 100) < randomFillPercent;
+            bool isEdge = col == 0 || col == width - 1 || row == 0 || row == height - 1;
+            map[col, row] = (isWall || isEdge) ? 1 : 0;
+        });
     }
 
     void SmoothMap() {
