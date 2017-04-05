@@ -314,11 +314,11 @@ public class MapGenerator : MonoBehaviour
     {
         List<Vector2> tiles = new List<Vector2>();
         int[,] mapFlags = new int[width,height];
-        int tileType = map [startX, startY];
+        int tileType = map[startX, startY];
 
         Queue<Vector2> queue = new Queue<Vector2>();
-        queue.Enqueue (new Vector2 (startX, startY));
-        mapFlags [startX, startY] = 1;
+        queue.Enqueue (new Vector2(startX, startY));
+        mapFlags[startX, startY] = 1;
 
         while (queue.Count > 0)
         {
@@ -339,6 +339,7 @@ public class MapGenerator : MonoBehaviour
                 queue.Enqueue(new Vector2(col, row));
             });
         }
+
         return tiles;
     }
 

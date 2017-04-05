@@ -2,29 +2,25 @@
 {
 	public class Square {
 
-        public ControlNode topLeft, topRight, bottomRight, bottomLeft;
-        public Node centreTop, centreRight, centreBottom, centreLeft;
-        public int configuration;
+        public ControlNode tl, tr, br, bl;
+        public Node tc, mr, bc, ml;
+        public int config = 0;
 
-        public Square (ControlNode _topLeft, ControlNode _topRight, ControlNode _bottomRight, ControlNode _bottomLeft) {
-            topLeft = _topLeft;
-            topRight = _topRight;
-            bottomRight = _bottomRight;
-            bottomLeft = _bottomLeft;
+        public Square (ControlNode topLeft, ControlNode topRight, ControlNode bottomRight, ControlNode bottomLeft) {
+            tl = topLeft;
+            tr = topRight;
+            br = bottomRight;
+            bl = bottomLeft;
 
-            centreTop = topLeft.right;
-            centreRight = bottomRight.above;
-            centreBottom = bottomLeft.right;
-            centreLeft = bottomLeft.above;
+            tc = tl.right;
+            mr = br.above;
+            bc = bl.right;
+            ml = bl.above;
 
-            if (topLeft.active)
-                configuration += 8;
-            if (topRight.active)
-                configuration += 4;
-            if (bottomRight.active)
-                configuration += 2;
-            if (bottomLeft.active)
-                configuration += 1;
+            if (tl.active) config += 8;
+            if (tr.active) config += 4;
+            if (br.active) config += 2;
+            if (bl.active) config += 1;
         }
 
     }
