@@ -243,18 +243,16 @@ public class MapGenerator : MonoBehaviour {
         List<List<Coord>> regions = new List<List<Coord>> ();
         int[,] mapFlags = new int[width,height];
 
-        for (int x = 0; x < width; x ++) {
-            for (int y = 0; y < height; y ++) {
-                if (mapFlags[x,y] == 0 && map[x,y] == tileType) {
-                    List<Coord> newRegion = GetRegionTiles(x,y);
-                    regions.Add(newRegion);
+        EachCell(0, width, 0, height, (int col, int row) => {
+            if (!(mapFlags[col, row] == 0 && map[col, row] == tileType)) return;
 
-                    foreach (Coord tile in newRegion) {
-                        mapFlags[tile.tileX, tile.tileY] = 1;
-                    }
-                }
+            List<Coord> newRegion = GetRegionTiles(col, row);
+            regions.Add(newRegion);
+
+            foreach (Coord tile in newRegion) {
+                mapFlags[tile.tileX, tile.tileY] = 1;
             }
-        }
+        });
 
         return regions;
     }
