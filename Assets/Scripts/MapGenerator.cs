@@ -272,16 +272,19 @@ public class MapGenerator : MonoBehaviour {
             Coord tile = queue.Dequeue();
             tiles.Add(tile);
 
-            for (int x = tile.tileX - 1; x <= tile.tileX + 1; x++) {
-                for (int y = tile.tileY - 1; y <= tile.tileY + 1; y++) {
-                    if (IsInMapRange(x,y) && (y == tile.tileY || x == tile.tileX)) {
-                        if (mapFlags[x,y] == 0 && map[x,y] == tileType) {
-                            mapFlags[x,y] = 1;
-                            queue.Enqueue(new Coord(x,y));
-                        }
+            int fx = tile.tileX - 1,
+                tx = tile.tileX + 2,
+                fy = tile.tileY - 1,
+                ty = tile.tileY + 2;
+
+            EachCell(fx, tx, fy, ty, (int col, int row) => {
+                if (IsInMapRange(col, row) && (row == tile.tileY || col == tile.tileX)) {
+                    if (mapFlags[col, row] == 0 && map[col, row] == tileType) {
+                        mapFlags[col, row] = 1;
+                        queue.Enqueue(new Coord(col, row));
                     }
                 }
-            }
+            });
         }
         return tiles;
     }
