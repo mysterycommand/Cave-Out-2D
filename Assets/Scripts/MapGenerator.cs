@@ -17,6 +17,8 @@ public class MapGenerator : MonoBehaviour {
 
     int[,] map;
 
+	private Action<int, int> noop = (int row, int col) => {};
+
     void Start() {
         GenerateMap();
     }
@@ -324,20 +326,45 @@ public class MapGenerator : MonoBehaviour {
 
     int GetSurroundingWallCount(int gridX, int gridY) {
         int wallCount = 0;
-        for (int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX ++) {
-            for (int neighbourY = gridY - 1; neighbourY <= gridY + 1; neighbourY ++) {
-                if (IsInMapRange(neighbourX,neighbourY)) {
-                    if (neighbourX != gridX || neighbourY != gridY) {
-                        wallCount += map[neighbourX,neighbourY];
-                    }
-                }
-                else {
-                    wallCount ++;
+
+        int fx = gridX - 1,
+            tx = gridX + 2,
+            fy = gridY - 1,
+            ty = gridY + 2;
+
+        EachCell(fx, tx, fy, ty, (int col, int row) => {
+            if (IsInMapRange(col, row))
+            {
+                if (col != gridX || row != gridY)
+                {
+                    wallCount += map[col, row];
                 }
             }
-        }
+            else
+            {
+                wallCount ++;
+            }
+        });
 
         return wallCount;
     }
+
+	public void EachCell(
+		int fromCol = 0, int toCol = 0,
+		int fromRow = 0, int toRow = 0,
+		Action<int, int> action = null)
+	{
+		if (action == null) {
+			action = noop;
+		}
+
+		for (int col = fromCol; col < toCol; ++col)
+		{
+			for (int row = fromRow; row < toRow; ++row)
+			{
+				action(col, row);
+			}
+		}
+	}
 
 }

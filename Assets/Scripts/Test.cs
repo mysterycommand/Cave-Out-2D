@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Test : MonoBehaviour {
 
 	private List<Vector2> vectors;
-	private static Action<int, int> noop = (int row, int col) => {};
+	private Action<int, int> noop = (int row, int col) => {};
 
 	/// <summary>
 	/// Start is called on the frame when a script is enabled just before
@@ -29,7 +29,7 @@ public class Test : MonoBehaviour {
 
 		vectors = new List<Vector2>();
 
-		EachCell(0, 10, 0, 10, (int col, int row) => {
+		EachCell(0, 2, 0, 2, (int col, int row) => {
 			vectors.Add(new Vector2(col, row));
 		});
 
