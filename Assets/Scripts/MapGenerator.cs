@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 using MysteryCommand.Procedural.Map;
@@ -69,31 +70,31 @@ public class MapGenerator : MonoBehaviour
 
     void ProcessMap()
     {
-        List<List<Coord>> wallRegions = GetRegions(1);
+        List<List<Vector2>> wallRegions = GetRegions(1);
         int wallThresholdSize = 50;
 
-        foreach (List<Coord> wallRegion in wallRegions)
+        foreach (List<Vector2> wallRegion in wallRegions)
         {
             if (wallRegion.Count < wallThresholdSize)
             {
-                foreach (Coord tile in wallRegion)
+                foreach (Vector2 tile in wallRegion)
                 {
-                    map[tile.tileX, tile.tileY] = 0;
+                    map[(int) tile.x, (int) tile.y] = 0;
                 }
             }
         }
 
-        List<List<Coord>> roomRegions = GetRegions (0);
+        List<List<Vector2>> roomRegions = GetRegions (0);
         int roomThresholdSize = 50;
         List<Room> survivingRooms = new List<Room>();
 
-        foreach (List<Coord> roomRegion in roomRegions)
+        foreach (List<Vector2> roomRegion in roomRegions)
         {
             if (roomRegion.Count < roomThresholdSize)
             {
-                foreach (Coord tile in roomRegion)
+                foreach (Vector2 tile in roomRegion)
                 {
-                    map[tile.tileX, tile.tileY] = 1;
+                    map[(int) tile.x, (int) tile.y] = 1;
                 }
             }
             else
@@ -135,8 +136,8 @@ public class MapGenerator : MonoBehaviour
         }
 
         int bestDistance = 0;
-        Coord bestTileA = new Coord();
-        Coord bestTileB = new Coord();
+        Vector2 bestTileA = new Vector2();
+        Vector2 bestTileB = new Vector2();
         Room bestRoomA = new Room();
         Room bestRoomB = new Room();
         bool possibleConnectionFound = false;
@@ -160,10 +161,10 @@ public class MapGenerator : MonoBehaviour
                     ty = roomB.edgeTiles.Count;
 
                 EachCell(0, tx, 0, ty, (int col, int row) => {
-                    Coord tileA = roomA.edgeTiles[col];
-                    Coord tileB = roomB.edgeTiles[row];
+                    Vector2 tileA = roomA.edgeTiles[col];
+                    Vector2 tileB = roomB.edgeTiles[row];
 
-                    int distanceBetweenRooms = (int) (Mathf.Pow(tileA.tileX - tileB.tileX, 2) + Mathf.Pow(tileA.tileY - tileB.tileY, 2));
+                    int distanceBetweenRooms = (int) (Mathf.Pow(tileA.x - tileB.x, 2) + Mathf.Pow(tileA.y - tileB.y, 2));
 
                     if (distanceBetweenRooms < bestDistance || !possibleConnectionFound)
                     {
@@ -195,17 +196,17 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    void CreatePassage(Room roomA, Room roomB, Coord tileA, Coord tileB)
+    void CreatePassage(Room roomA, Room roomB, Vector2 tileA, Vector2 tileB)
     {
         Room.ConnectRooms (roomA, roomB);
-        List<Coord> line = GetLine (tileA, tileB);
-        foreach (Coord c in line)
+        List<Vector2> line = GetLine (tileA, tileB);
+        foreach (Vector2 c in line)
         {
             DrawCircle(c, 5);
         }
     }
 
-    void DrawCircle(Coord c, int r)
+    void DrawCircle(Vector2 c, int r)
     {
         int f = -r,
             t = r + 1;
@@ -213,8 +214,8 @@ public class MapGenerator : MonoBehaviour
         EachCell(f, t, f, t, (int col, int row) => {
             if (col * col + row * row > r * r)  return;
 
-            int drawX = c.tileX + col;
-            int drawY = c.tileY + row;
+            int drawX = (int) c.x + col;
+            int drawY = (int) c.y + row;
 
             if (IsInMapRange(drawX, drawY)) {
                 map[drawX,drawY] = 0;
@@ -222,15 +223,15 @@ public class MapGenerator : MonoBehaviour
         });
     }
 
-    List<Coord> GetLine(Coord from, Coord to)
+    List<Vector2> GetLine(Vector2 from, Vector2 to)
     {
-        List<Coord> line = new List<Coord>();
+        List<Vector2> line = new List<Vector2>();
 
-        int x = from.tileX;
-        int y = from.tileY;
+        int x = (int) from.x;
+        int y = (int) from.y;
 
-        int dx = to.tileX - from.tileX;
-        int dy = to.tileY - from.tileY;
+        int dx = (int) to.x - (int) from.x;
+        int dy = (int) to.y - (int) from.y;
 
         bool inverted = false;
         int step = Math.Sign (dx);
@@ -252,7 +253,7 @@ public class MapGenerator : MonoBehaviour
         int gradientAccumulation = longest / 2;
         for (int i = 0; i < longest; ++i)
         {
-            line.Add(new Coord(x,y));
+            line.Add(new Vector2(x,y));
 
             if (inverted)
             {
@@ -281,61 +282,61 @@ public class MapGenerator : MonoBehaviour
         return line;
     }
 
-    Vector3 CoordToWorldPoint(Coord tile)
+    Vector3 Vector2ToWorldPoint(Vector2 tile)
     {
-        float x = -width / 2 + 0.5f + tile.tileX,
-            y = -height / 2 + .5f + tile.tileY;
+        float x = -width / 2 + 0.5f + tile.x,
+            y = -height / 2 + .5f + tile.y;
 
         return new Vector3(x, 2, y);
     }
 
-    List<List<Coord>> GetRegions(int tileType)
+    List<List<Vector2>> GetRegions(int tileType)
     {
-        List<List<Coord>> regions = new List<List<Coord>>();
+        List<List<Vector2>> regions = new List<List<Vector2>>();
         int[,] mapFlags = new int[width,height];
 
         EachCell(0, width, 0, height, (int col, int row) => {
             if (!(mapFlags[col, row] == 0 && map[col, row] == tileType)) return;
 
-            List<Coord> newRegion = GetRegionTiles(col, row);
+            List<Vector2> newRegion = GetRegionTiles(col, row);
             regions.Add(newRegion);
 
-            foreach (Coord tile in newRegion)
+            foreach (Vector2 tile in newRegion)
             {
-                mapFlags[tile.tileX, tile.tileY] = 1;
+                mapFlags[(int) tile.x, (int) tile.y] = 1;
             }
         });
 
         return regions;
     }
 
-    List<Coord> GetRegionTiles(int startX, int startY)
+    List<Vector2> GetRegionTiles(int startX, int startY)
     {
-        List<Coord> tiles = new List<Coord>();
+        List<Vector2> tiles = new List<Vector2>();
         int[,] mapFlags = new int[width,height];
         int tileType = map [startX, startY];
 
-        Queue<Coord> queue = new Queue<Coord>();
-        queue.Enqueue (new Coord (startX, startY));
+        Queue<Vector2> queue = new Queue<Vector2>();
+        queue.Enqueue (new Vector2 (startX, startY));
         mapFlags [startX, startY] = 1;
 
         while (queue.Count > 0)
         {
-            Coord tile = queue.Dequeue();
+            Vector2 tile = queue.Dequeue();
             tiles.Add(tile);
 
-            int fx = tile.tileX - 1,
-                tx = tile.tileX + 2,
-                fy = tile.tileY - 1,
-                ty = tile.tileY + 2;
+            int fx = (int) tile.x - 1,
+                tx = (int) tile.x + 2,
+                fy = (int) tile.y - 1,
+                ty = (int) tile.y + 2;
 
             EachCell(fx, tx, fy, ty, (int col, int row) => {
                 if (!IsInMapRange(col, row)) return;
-                if (!(row == tile.tileY || col == tile.tileX)) return;
+                if (!(row == tile.y || col == tile.x)) return;
                 if (!(mapFlags[col, row] == 0 && map[col, row] == tileType)) return;
 
                 mapFlags[col, row] = 1;
-                queue.Enqueue(new Coord(col, row));
+                queue.Enqueue(new Vector2(col, row));
             });
         }
         return tiles;

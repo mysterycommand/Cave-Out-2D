@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 namespace MysteryCommand.Procedural.Map
 {
 	public class Room : IComparable<Room>
 	{
-		public List<Coord> tiles;
-		public List<Coord> edgeTiles;
+		public List<Vector2> tiles;
+		public List<Vector2> edgeTiles;
 		public List<Room> connectedRooms;
 		public int roomSize;
 		public bool isAccessibleFromMainRoom;
@@ -14,20 +16,20 @@ namespace MysteryCommand.Procedural.Map
 
 		public Room() {}
 
-		public Room(List<Coord> roomTiles, int[,] map)
+		public Room(List<Vector2> roomTiles, int[,] map)
 		{
 			tiles = roomTiles;
 			roomSize = tiles.Count;
 			connectedRooms = new List<Room>();
 
-			edgeTiles = new List<Coord>();
-			foreach (Coord tile in tiles)
+			edgeTiles = new List<Vector2>();
+			foreach (Vector2 tile in tiles)
 			{
-				for (int x = tile.tileX-1; x <= tile.tileX+1; x++)
+				for (int x = (int) tile.x - 1; x <= tile.x + 1; x++)
 				{
-					for (int y = tile.tileY-1; y <= tile.tileY+1; y++)
+					for (int y = (int) tile.y - 1; y <= tile.y + 1; y++)
 					{
-						if (x == tile.tileX || y == tile.tileY)
+						if (x == tile.x || y == tile.y)
 						{
 							if (map[x,y] == 1)
 							{
