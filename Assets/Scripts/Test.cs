@@ -37,16 +37,18 @@ public class Test : MonoBehaviour {
 		// 	Debug.Log(i + ": " + vector.ToString());
 		// });
 
-		MapTest<Vector2> map = new MapTest<Vector2>(16, 9);
-		map.EachCell((int x, int y) => {
-			map[x, y] = new Vector2(x, y);
+		MapTest<int> intMap = new MapTest<int>(16, 9);
+
+		MapTest<Vector2> vectorMap = new MapTest<Vector2>(16, 9);
+		vectorMap.EachCell((int x, int y) => {
+			vectorMap[x, y] = new Vector2(x, y);
 		});
 
 		for (int x = 0; x < 16; ++x)
 		{
 			for (int y = 0; y < 9; ++y)
 			{
-				Debug.Log(x + ":" + y + " " + map[x, y]);
+				Debug.Log(x + ":" + y + " " + vectorMap[x, y]);
 			}
 		}
 	}
@@ -54,8 +56,8 @@ public class Test : MonoBehaviour {
 	public class MapTest<T> where T : new() {
 		private List<T> cells = new List<T>();
 
-		private int width;
-		private int height;
+		public int width { get; private set; }
+		public int height { get; private set; }
 
 		public MapTest(int width, int height)
 		{
@@ -79,6 +81,27 @@ public class Test : MonoBehaviour {
 				cells[x * height + y] = value;
 			}
 		}
+
+		// public static MapTest<T> operator +(MapTest<T> a, MapTest<T> b) {
+		// 	if (a.width != b.width || a.height != b.height) {
+		// 		string msg = "Cannot add two maps of different sizes. Attempting to add " + a.ToString() + " and " + b.ToString() + ".";
+		// 		throw new InvalidOperationException(msg);
+		// 	}
+
+		// 	MapTest<T> map = new MapTest<T>(a.width, a.height);
+		// 	map.EachCell((int x, int y) => {
+		// 		T axy = a[x, y];
+		// 		T bxy = b[x, y];
+		// 		map[x, y] = axy + bxy;
+		// 	});
+
+		// 	return map;
+		// }
+
+		// override public string ToString()
+		// {
+		// 	return "MapTest<" + typeof(T) + ">(" + width + "," + height + ")";
+		// }
 
 		public void EachCell(Action<int, int> action = null)
 		{
