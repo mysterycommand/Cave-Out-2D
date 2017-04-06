@@ -56,10 +56,10 @@ public class MapGenerator : MonoBehaviour
             ty = borderedMap.GetLength(1);
 
         EachCell(0, tx, 0, ty, (int col, int row) => {
-            bool isColBorder = col >= borderSize && col < width + borderSize;
-            bool isRowBorder = row >= borderSize && row < height + borderSize;
+            bool isMapCol = col >= borderSize && col < width + borderSize;
+            bool isMapRow = row >= borderSize && row < height + borderSize;
 
-            borderedMap[col, row] = (isColBorder && isRowBorder) ?
+            borderedMap[col, row] = (isMapCol && isMapRow) ?
                 map[col - borderSize, row - borderSize] :
                 1;
         });
