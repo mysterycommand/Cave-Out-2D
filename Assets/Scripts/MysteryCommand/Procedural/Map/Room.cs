@@ -16,7 +16,7 @@ namespace MysteryCommand.Procedural.Map
 
 		public Room() {}
 
-		public Room(List<Vector2> roomTiles, int[,] map)
+		public Room(List<Vector2> roomTiles, Texture2D map)
 		{
 			tiles = roomTiles;
 			roomSize = tiles.Count;
@@ -31,7 +31,7 @@ namespace MysteryCommand.Procedural.Map
 					{
 						if (x == tile.x || y == tile.y)
 						{
-							if (map[x,y] == 1)
+							if (map.GetPixel(x, y) == Color.white)
 							{
 								edgeTiles.Add(tile);
 							}

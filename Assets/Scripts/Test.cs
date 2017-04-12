@@ -38,6 +38,7 @@ public class Test : MonoBehaviour {
 		// });
 
 		MapTest<int> intMap = new MapTest<int>(16, 9);
+		Debug.Log(intMap.ToString());
 
 		MapTest<Vector2> vectorMap = new MapTest<Vector2>(16, 9);
 		vectorMap.EachCell((int x, int y) => {
@@ -98,10 +99,11 @@ public class Test : MonoBehaviour {
 		// 	return map;
 		// }
 
-		// override public string ToString()
-		// {
-		// 	return "MapTest<" + typeof(T) + ">(" + width + "," + height + ")";
-		// }
+		override public string ToString()
+		{
+			// return $"MapTest<{typeof(T)}>({width},{height})";
+			return "MapTest<" + "typeof(T)" + ">(" + "width" + "," + "height" + ")";
+		}
 
 		public void EachCell(Action<int, int> action = null)
 		{
