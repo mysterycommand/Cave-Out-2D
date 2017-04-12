@@ -17,7 +17,7 @@ public class MapGenerator : MonoBehaviour
     [Range(0,100)]
     public int randomFillPercent;
 
-    Texture2D map;
+    int[,] map;
 
 	private Action<int, int> noop = (int row, int col) => {};
 
@@ -36,7 +36,7 @@ public class MapGenerator : MonoBehaviour
 
     void GenerateMap()
     {
-        map = new Texture2D(width, height);
+        map = new int[width, height];
         RandomFillMap();
 
         for (int i = 0; i < 5; ++i)
@@ -47,21 +47,21 @@ public class MapGenerator : MonoBehaviour
         ProcessMap();
 
         int borderSize = 1;
-        Texture2D borderedMap = new Texture2D(
+        int[,] borderedMap = new int[
             width + borderSize * 2,
             height + borderSize * 2
-        );
+        ];
 
-        int tx = borderedMap.width,
-            ty = borderedMap.height;
+        int tx = borderedMap.GetLength(0),
+            ty = borderedMap.GetLength(1);
 
         EachCell(0, tx, 0, ty, (int col, int row) => {
             bool isMapCol = col >= borderSize && col < width + borderSize;
             bool isMapRow = row >= borderSize && row < height + borderSize;
 
-            borderedMap.SetPixel(col, row, (isMapCol && isMapRow) ?
-                map.GetPixel(col - borderSize, row - borderSize) :
-                Color.white);
+            borderedMap[col, row] = (isMapCol && isMapRow) ?
+                map[col - borderSize, row - borderSize] :
+                1;
         });
 
         MeshGenerator meshGen = GetComponent<MeshGenerator>();
@@ -70,7 +70,7 @@ public class MapGenerator : MonoBehaviour
 
     void ProcessMap()
     {
-        List<List<Vector2>> wallRegions = GetRegions(Color.white);
+        List<List<Vector2>> wallRegions = GetRegions(1);
         int wallThresholdSize = 50;
 
         foreach (List<Vector2> wallRegion in wallRegions)
@@ -79,12 +79,12 @@ public class MapGenerator : MonoBehaviour
             {
                 foreach (Vector2 tile in wallRegion)
                 {
-                    map.SetPixel((int) tile.x, (int) tile.y, Color.black);
+                    map[(int) tile.x, (int) tile.y] = 0;
                 }
             }
         }
 
-        List<List<Vector2>> roomRegions = GetRegions(Color.black);
+        List<List<Vector2>> roomRegions = GetRegions (0);
         int roomThresholdSize = 50;
         List<Room> survivingRooms = new List<Room>();
 
@@ -94,7 +94,7 @@ public class MapGenerator : MonoBehaviour
             {
                 foreach (Vector2 tile in roomRegion)
                 {
-                    map.SetPixel((int) tile.x, (int) tile.y, Color.white);
+                    map[(int) tile.x, (int) tile.y] = 1;
                 }
             }
             else
@@ -218,7 +218,7 @@ public class MapGenerator : MonoBehaviour
             int drawY = (int) c.y + row;
 
             if (IsInMapRange(drawX, drawY)) {
-                map.SetPixel(drawX, drawY, Color.black);
+                map[drawX,drawY] = 0;
             }
         });
     }
@@ -290,13 +290,13 @@ public class MapGenerator : MonoBehaviour
         return new Vector3(x, 2, y);
     }
 
-    List<List<Vector2>> GetRegions(Color tileType)
+    List<List<Vector2>> GetRegions(int tileType)
     {
         List<List<Vector2>> regions = new List<List<Vector2>>();
         int[,] mapFlags = new int[width,height];
 
         EachCell(0, width, 0, height, (int col, int row) => {
-            if (!(mapFlags[col, row] == 0 && map.GetPixel(col, row) == tileType)) return;
+            if (!(mapFlags[col, row] == 0 && map[col, row] == tileType)) return;
 
             List<Vector2> newRegion = GetRegionTiles(col, row);
             regions.Add(newRegion);
@@ -314,7 +314,7 @@ public class MapGenerator : MonoBehaviour
     {
         List<Vector2> tiles = new List<Vector2>();
         int[,] mapFlags = new int[width,height];
-        Color tileType = map.GetPixel(startX, startY);
+        int tileType = map[startX, startY];
 
         Queue<Vector2> queue = new Queue<Vector2>();
         queue.Enqueue (new Vector2(startX, startY));
@@ -333,7 +333,7 @@ public class MapGenerator : MonoBehaviour
             EachCell(fx, tx, fy, ty, (int col, int row) => {
                 if (!IsInMapRange(col, row)) return;
                 if (!(row == tile.y || col == tile.x)) return;
-                if (!(mapFlags[col, row] == 0 && map.GetPixel(col, row) == tileType)) return;
+                if (!(mapFlags[col, row] == 0 && map[col, row] == tileType)) return;
 
                 mapFlags[col, row] = 1;
                 queue.Enqueue(new Vector2(col, row));
@@ -360,7 +360,7 @@ public class MapGenerator : MonoBehaviour
         EachCell(0, width, 0, height, (int col, int row) => {
             bool isWall = rando.Next(0, 100) < randomFillPercent;
             bool isEdge = col == 0 || col == width - 1 || row == 0 || row == height - 1;
-            map.SetPixel(col, row, (isWall || isEdge) ? Color.white : Color.black);
+            map[col, row] = (isWall || isEdge) ? 1 : 0;
         });
     }
 
@@ -369,8 +369,8 @@ public class MapGenerator : MonoBehaviour
         EachCell(0, width, 0, height, (int col, int row) => {
             int surroundingWallCount = GetSurroundingWallCount(col, row);
 
-            if (surroundingWallCount > 4) map.SetPixel(col, row, Color.white);
-            else if (surroundingWallCount < 4) map.SetPixel(col, row, Color.black);
+            if (surroundingWallCount > 4) map[col, row] = 1;
+            else if (surroundingWallCount < 4) map[col, row] = 0;
         });
     }
 
@@ -388,7 +388,7 @@ public class MapGenerator : MonoBehaviour
             {
                 if (col != gridX || row != gridY)
                 {
-                    wallCount += map.GetPixel(col, row) == Color.white ? 1 : 0;
+                    wallCount += map[col, row];
                 }
             }
             else
