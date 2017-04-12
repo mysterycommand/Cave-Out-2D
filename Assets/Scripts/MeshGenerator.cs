@@ -17,7 +17,7 @@ public class MeshGenerator : MonoBehaviour
     List<List<int>> outlines = new List<List<int>>();
     HashSet<int> checkedVertices = new HashSet<int>();
 
-    public void GenerateMesh(int[,] map, float squareSize)
+    public void GenerateMesh(Texture2D map, float squareSize)
     {
         triangleDictionary.Clear();
         outlines.Clear();
@@ -48,14 +48,14 @@ public class MeshGenerator : MonoBehaviour
         for (int i =0; i < vertices.Count; ++i)
         {
             float percentX = Mathf.InverseLerp(
-                -map.GetLength(0) / 2 * squareSize,
-                map.GetLength(0) / 2 * squareSize,
+                -map.width / 2 * squareSize,
+                map.width / 2 * squareSize,
                 vertices[i].x
             ) * tileAmount;
 
             float percentY = Mathf.InverseLerp(
-                -map.GetLength(0) / 2 * squareSize,
-                map.GetLength(0) / 2 * squareSize,
+                -map.width / 2 * squareSize,
+                map.width / 2 * squareSize,
                 vertices[i].z
             ) * tileAmount;
 
